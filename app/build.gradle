@@ -1,0 +1,44 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Set by GitHub Actions (run number); local builds fall back to 1.
+def buildNumber = (System.getenv("VERSION_CODE") ?: "1").toInteger()
+
+android {
+    namespace 'com.dudai.pilltracker'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.dudai.pilltracker"
+        minSdk 26
+        targetSdk 34
+        versionCode buildNumber
+        versionName "1.0.${buildNumber}"
+    }
+
+    // Fixed signing key: every new APK installs over the old one and keeps the data.
+    signingConfigs {
+        stable {
+            storeFile file("pilltracker.keystore")
+            storePassword "Pk7wQz2LmR9vXc4TbN8s"
+            keyAlias "pilltracker"
+            keyPassword "Pk7wQz2LmR9vXc4TbN8s"
+        }
+    }
+
+    buildTypes {
+        debug { signingConfig signingConfigs.stable }
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.stable
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// No external libraries: Android framework only (SQLite, AlarmManager, Notifications).
